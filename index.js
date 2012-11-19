@@ -3,25 +3,27 @@ var toElementArray = require('to-element-array');
 var DOMinate = require('DOMinate');
 
 function Sorter(element) {
+  this.el = element;
   this.cls = classes(element);
 }
 Sorter.prototype.toggle = function () {
-  if (this.state === 'down') {
+  if (this.cls.has('sorter-down')) {
     return this.up();
   } else {
     return this.down();
   }
 }
-Sorter.prototype.clear = function () {
-  this.cls.remove('sorter-down').remove('sorter-up');
+Sorter.prototype.clear = function (unless) {
+  if (!unless || this.el != toElementArray(unless)[0])
+    this.cls.remove('sorter-down').remove('sorter-up');
 }
 Sorter.prototype.up = function () {
   this.cls.remove('sorter-down').add('sorter-up');
-  return this.state = 'up';
+  return 'up';
 }
 Sorter.prototype.down = function () {
   this.cls.remove('sorter-up').add('sorter-down');
-  return this.state = 'down';
+  return 'down';
 }
 
 function defaultSortControl() {
@@ -38,11 +40,13 @@ function sorters(elements) {
   else if (!(this instanceof sorters)) return new sorters(elements);
   function makeFn(name) {
     return function () {
+      var args = arguments;
+      var self = this;
       var first = true;
       var result;
       toElementArray(elements)
         .forEach(function (element) {
-          var res = new Sorter(element)[name]();
+          var res = new Sorter(element)[name].apply(self, arguments);
           if (first || result === res) result = res;
           else result = undefined;
           first = false;

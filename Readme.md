@@ -19,9 +19,11 @@
   var all = sorter.appendToParent(document.getElementsByTagName('th'));
 
   function sortBy(id) {
-    all.clear();
-    //toggle state is still remembered after a clear
-    sorter('#' + id + '.sorter').toggle();
+    var el = document.querySelector('#' + id + '.sorter');
+    //clear all except el
+    all.clear(el);
+    //toggle state of el
+    sorter(el).toggle();
   }
   ```
 
@@ -45,9 +47,9 @@
 
   Puts the sorter(s) in the `down` state.
 
-### Sorter#clear()
+### Sorter#clear(except)
 
-  Resets the appearence of the sorter(s).
+  Resets the appearence of the sorter(s) except the one passed as an argument (typically the one just clicked).
 
 ### Sorter#toggle()
 
