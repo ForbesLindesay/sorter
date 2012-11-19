@@ -41,12 +41,12 @@ function sorters(elements) {
   function makeFn(name) {
     return function () {
       var args = arguments;
-      var self = this;
       var first = true;
       var result;
       toElementArray(elements)
         .forEach(function (element) {
-          var res = new Sorter(element)[name].apply(self, arguments);
+          var s = new Sorter(element);
+          var res = s[name].apply(s, arguments);
           if (first || result === res) result = res;
           else result = undefined;
           first = false;
