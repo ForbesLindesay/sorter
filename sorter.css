@@ -2,9 +2,9 @@
   width: 1em;
   height: 1em;
 }
-.sorter-down .sorter-down-arrow {
+.sorter-down .sorter-up-arrow {
   display: none;
 }
-.sorter-up .sorter-up-arrow {
+.sorter-up .sorter-down-arrow {
   display: none;
 }

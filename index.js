@@ -29,8 +29,8 @@ Sorter.prototype.down = function () {
 function defaultSortControl() {
   return DOMinate(
     ['svg.sorter', {viewBox:'-4,-4,108,108', version:'1.1'},
-      ['polygon.sorter-arrow.sorter-up-arrow', {points:'0,52.5 50,100 100,52.5'}],
-      ['polygon.sorter-arrow.sorter-down-arrow', {points:'0,47.5 50,0 100,47.5'}]
+      ['polygon.sorter-arrow.sorter-up-arrow', {points:'0,47.5 50,0 100,47.5'}],
+      ['polygon.sorter-arrow.sorter-down-arrow', {points:'0,52.5 50,100 100,52.5'}]
     ], 'http://www.w3.org/2000/svg');
 }
 
