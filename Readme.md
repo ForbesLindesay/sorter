@@ -1,7 +1,7 @@
 
 # sorter
 
-  A sorter control for JavaScript (just a simple SVG up down arrow)
+  A sorter control for JavaScript (just a simple SVG up down arrow).  You can see a live demo [here](http://forbeslindesay.github.com/sorter/)
 
 ## Installation
 
