@@ -1,7 +1,7 @@
 {
   "name": "sorter",
   "repo": "ForbesLindesay/sorter",
-  "description": "A sorter control for JavaScript (just a simple SVG up down arrow)",
+  "description": "A simple up down ui-element for indicating sort direction in column headings (using SVG)",
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
