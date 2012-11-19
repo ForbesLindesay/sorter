@@ -46,7 +46,7 @@ function sorters(elements) {
       toElementArray(elements)
         .forEach(function (element) {
           var s = new Sorter(element);
-          var res = s[name].apply(s, arguments);
+          var res = s[name].apply(s, args);
           if (first || result === res) result = res;
           else result = undefined;
           first = false;
