@@ -1,0 +1,19 @@
+{
+  "name": "sorter",
+  "repo": "ForbesLindesay/sorter",
+  "description": "A sorter control for JavaScript (just a simple SVG up down arrow)",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    "ForbesLindesay/classes": "*",
+    "ForbesLindesay/to-element-array": "*",
+    "microjs/DOMinate": "*"
+  },
+  "development": {},
+  "scripts": [
+    "index.js"
+  ],
+  "styles": [
+    "sorter.css"
+  ]
+}
