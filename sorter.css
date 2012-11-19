@@ -1,3 +1,7 @@
+.sorter {
+  width: 1em;
+  height: 1em;
+}
 .sorter-down .sorter-down-arrow {
   display: none;
 }
