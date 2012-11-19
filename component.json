@@ -2,7 +2,7 @@
   "name": "sorter",
   "repo": "ForbesLindesay/sorter",
   "description": "A simple up down ui-element for indicating sort direction in column headings (using SVG)",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "keywords": [],
   "dependencies": {
     "ForbesLindesay/classes": "*",
