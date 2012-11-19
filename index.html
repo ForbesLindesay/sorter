@@ -41,9 +41,9 @@
       var headers = toElementArray('th');
       headers.forEach(function (header) {
         header.addEventListener('click', function () {
-          var sorter = header.getElementsByClassName('sorter');
-          all.clear(sorter);
-          sorter().toggle();
+          var current = header.getElementsByClassName('sorter');
+          all.clear(current);
+          sorter(current).toggle();
         }, false);
       });
     </script>
