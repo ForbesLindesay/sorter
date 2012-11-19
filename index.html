@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-size: 3em;
+      }
+      .sorter {
+        width: 1em;
+        height: 1em;
+      }
+      .sorter-down .sorter-down-arrow {
+        display: none;
+      }
+      .sorter-up .sorter-up-arrow {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Number</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Forbes Lindesay</td>
+          <td>foo@bar.com</td>
+          <td>0 0000 000000</td>
+        </tr>
+      </tbody>
+    </table>
+    <script src="https://component.jit.su/ForbesLindesay/to-element-array/download/latest.js"></script>
+    <script src="https://component.jit.su/ForbesLindesay/sorter/download/latest.js"></script>
+    <script>
+      var all = sorter.appendToParent('th');
+      var headers = toElementArray('th');
+      headers.forEach(function (header) {
+        header.addEventListener('click', function () {
+          var sorter = header.getElementsByClassName('sorter');
+          all.clear(sorter);
+          sorter().toggle();
+        }, false);
+      });
+    </script>
+  </body>
+</html>
