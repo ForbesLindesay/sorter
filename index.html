@@ -43,7 +43,10 @@
         header.addEventListener('click', function () {
           var current = header.getElementsByClassName('sorter');
           all.clear(current);
-          console.log(sorter(current).toggle());
+          var direction = sorter(current).toggle();
+          if (typeof console != 'undefined' && console && console.log) {
+            console.log(direction);
+          }
         }, false);
       });
     </script>
