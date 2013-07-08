@@ -3,6 +3,9 @@
 
   A sorter control for JavaScript (just a simple SVG up down arrow).
 
+[![Dependency Status](https://gemnasium.com/ForbesLindesay/sorter.png)](https://gemnasium.com/ForbesLindesay/sorter)
+[![NPM version](https://badge.fury.io/js/sorter.png)](http://badge.fury.io/js/sorter)
+
 ## Installation
 
     $ npm install sorter
