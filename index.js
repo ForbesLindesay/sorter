@@ -6,7 +6,13 @@ var arrayify = require('arrayify')
 var DOMinate = require('dominate')
 insertCSS('.sorter { width: 1em; height: 1em; } .sorter-down .sorter-up-arrow { display: none; } .sorter-up .sorter-down-arrow { display: none; }')
 
-module.exports = TableSorter
+module.exports = function (table, options) {
+  if (typeof table === 'string') {
+    return new TableSorterSet(table, options)
+  } else {
+    return new TableSorter(table, options)
+  }
+}
 module.exports.DefaultSortControl = DefaultSortControl
 
 function add(el, cls) {
@@ -43,6 +49,32 @@ DefaultSortControl.prototype.down = function () {
   add(this.element, this.options.down)
 }
 
+function TableSorterSet(tables, options) {
+  tables = arrayify(tables, {query: true})
+  EventEmitter.call(this)
+  var self = this
+  this.tables = tables.map(function (table) {
+    var sorter = new TableSorter(table, options)
+    var emit = sorter.emit
+    sorter.emit = function (name) {
+      self.emit.apply(self, arguments)
+      emit.apply(this, arguments)
+    }
+    return sorter
+  })
+}
+TableSorterSet.prototype = Object.create(EventEmitter.prototype)
+TableSorterSet.prototype.constructor = TableSorterSet
+TableSorterSet.prototype.sort = function (th, direction, silent) {
+  this.tables.forEach(function (table) {
+    table.sort(th, direction, silent)
+  })
+}
+TableSorterSet.prototype.clear = function (silent) {
+  this.tables.forEach(function (table) {
+    table.clear(silent)
+  })
+}
 /**
  * Return an event emitter that emits `sort(table, tableHeader, direction)` and `clear(table)` as events and has the additional API methods `sort(th, direction, silent)` and `clear(silent)`
  * 
@@ -58,9 +90,8 @@ DefaultSortControl.prototype.down = function () {
  * @return {TableSorter} Inherits EventEmitter
  */
 function TableSorter(table, options) {
-  if (!(this instanceof TableSorter)) return new TableSorter(table, options)
   EventEmitter.call(this)
-  this.table = (table = typeof table === 'string' ? document.querySelector(table) : table)
+  this.table = table
   options = options || {}
   this.headers = arrayify(typeof options.th === 'string' ? table.querySelectorAll(options.th) : options.th || table.getElementsByTagName('th'))
     .map(function (th) {
