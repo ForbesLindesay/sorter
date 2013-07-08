@@ -1,70 +1,105 @@
-var classes = require('classes');
-var toElementArray = require('to-element-array');
-var DOMinate = require('DOMinate');
+'use strict'
 
-function Sorter(element) {
-  this.el = element;
-  this.cls = classes(element);
+var EventEmitter = require('events').EventEmitter
+var insertCSS = require('insert-css')
+var arrayify = require('arrayify')
+var DOMinate = require('dominate')
+insertCSS('.sorter { width: 1em; height: 1em; } .sorter-down .sorter-up-arrow { display: none; } .sorter-up .sorter-down-arrow { display: none; }')
+
+module.exports = TableSorter
+module.exports.DefaultSortControl = DefaultSortControl
+
+function add(el, cls) {
+  if (el.classList) return el.classList.add(cls)
 }
-Sorter.prototype.toggle = function () {
-  if (this.cls.has('sorter-down')) {
-    return this.up();
-  } else {
-    return this.down();
+function remove(el, cls) {
+  if (el.classList) return el.classList.remove(cls)
+}
+
+function DefaultSortControl(th, options) {
+  if (!(this instanceof DefaultSortControl)) return new DefaultSortControl(th, options)
+  options = options || {}
+  options.up = options.up || 'sorter-up'
+  options.down = options.down || 'sorter-down'
+  this.options = options
+  var element = DOMinate(
+    ['svg.' + (options.sorter || 'sorter'), {viewBox:'-4,-4,108,108', version:'1.1'},
+      ['polygon.' + (options.upArrow || 'sorter-up-arrow'), {points:'0,47.5 50,0 100,47.5'}],
+      ['polygon.' + (options.downArrow || 'sorter-down-arrow'), {points:'0,52.5 50,100 100,52.5'}]
+    ], 'http://www.w3.org/2000/svg')
+  th.appendChild(element)
+  this.element = element
+}
+DefaultSortControl.prototype.clear = function () {
+  remove(this.element, this.options.up)
+  remove(this.element, this.options.down)
+}
+DefaultSortControl.prototype.up = function () {
+  add(this.element, this.options.up)
+  remove(this.element, this.options.down)
+}
+DefaultSortControl.prototype.down = function () {
+  remove(this.element, this.options.up)
+  add(this.element, this.options.down)
+}
+
+/**
+ * Return an event emitter that emits `sort(table, tableHeader, direction)` and `clear(table)` as events and has the additional API methods `sort(th, direction, silent)` and `clear(silent)`
+ * 
+ * @param {Element}   table
+ * @param {Object=}   options
+ * @param {String=}   options.th          A query selector for the collection of table headers
+ * @param {Function=} options.sortControl A function that takes an the table header element and options block and returns an object with `up`, `down` and `clear` methods
+ * @param {String=}   options.sorter      The `sorter` class
+ * @param {String=}   options.up          The `sorter-up` class
+ * @param {String=}   options.down        The `sorter-down` class
+ * @param {String=}   options.upArrow     The `sorter-up-arrow` class
+ * @param {String=}   options.downArrow   The `sorter-down-arrow` class
+ * @return {TableSorter} Inherits EventEmitter
+ */
+function TableSorter(table, options) {
+  if (!(this instanceof TableSorter)) return new TableSorter(table, options)
+  EventEmitter.call(this)
+  this.table = (table = typeof table === 'string' ? document.querySelector(table) : table)
+  options = options || {}
+  this.headers = arrayify(typeof options.th === 'string' ? table.querySelectorAll(options.th) : options.th || table.getElementsByTagName('th'))
+    .map(function (th) {
+      return {
+        th: th,
+        sorter: (options.sortControl || DefaultSortControl)(th, options),
+        direction: null
+      }
+    })
+  for (var i = 0; i < this.headers.length; i++) {
+    this.headers[i].th.addEventListener('click', this.sort.bind(this, this.headers[i].th, null, false), false)
   }
 }
-Sorter.prototype.clear = function (unless) {
-  if (!unless || this.el != toElementArray(unless)[0])
-    this.cls.remove('sorter-down').remove('sorter-up');
-}
-Sorter.prototype.up = function () {
-  this.cls.remove('sorter-down').add('sorter-up');
-  return 'up';
-}
-Sorter.prototype.down = function () {
-  this.cls.remove('sorter-up').add('sorter-down');
-  return 'down';
-}
+TableSorter.prototype = Object.create(EventEmitter.prototype)
+TableSorter.prototype.constructor = TableSorter
 
-function defaultSortControl() {
-  return DOMinate(
-    ['svg.sorter', {viewBox:'-4,-4,108,108', version:'1.1'},
-      ['polygon.sorter-arrow.sorter-up-arrow', {points:'0,47.5 50,0 100,47.5'}],
-      ['polygon.sorter-arrow.sorter-down-arrow', {points:'0,52.5 50,100 100,52.5'}]
-    ], 'http://www.w3.org/2000/svg');
-}
-
-module.exports = sorters;
-function sorters(elements) {
-  if (elements instanceof sorters) return elements;
-  else if (!(this instanceof sorters)) return new sorters(elements);
-  function makeFn(name) {
-    return function () {
-      var args = arguments;
-      var first = true;
-      var result;
-      toElementArray(elements)
-        .forEach(function (element) {
-          var s = new Sorter(element);
-          var res = s[name].apply(s, args);
-          if (first || result === res) result = res;
-          else result = undefined;
-          first = false;
-        });
-      return result;
-    };
+TableSorter.prototype.sort = function sort(th, direction, silent) {
+  var column
+  for (var i = 0; i < this.headers.length; i++) {
+    if (this.headers[i].th != th && this.headers[i].direction !== null) {
+      this.headers[i].sorter.clear()
+      this.headers[i].direction = null
+    } else if (this.headers[i].th === th) {
+      column = this.headers[i]
+    }
   }
-  this.up = makeFn('up');
-  this.down = makeFn('down');
-  this.toggle = makeFn('toggle');
-  this.clear = makeFn('clear');
+  if (th) {
+    if (direction === 'up' || (!direction && column.direction === 'down')) {
+      column.direction = 'up'
+      column.sorter.up()
+    } else {
+      column.direction = 'down'
+      column.sorter.down()
+    }
+  }
+  if (silent) return
+  if (th) this.emit('sort', this.table, column.th, column.direction)
+  else this.emit('clear', this.table)
 }
-sorters.appendToParent = function (elements) {
-  var res = toElementArray(elements)
-    .map(function (element) {
-      var sorter = defaultSortControl();
-      element.appendChild(sorter);
-      return sorter;
-    });
-  return sorters(res);
+TableSorter.prototype.clear = function clear(silent) {
+  return this.sort(false, null, silent)
 }

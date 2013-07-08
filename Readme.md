@@ -1,59 +1,120 @@
 
 # sorter
 
-  A sorter control for JavaScript (just a simple SVG up down arrow).  You can see a live demo [here](http://forbeslindesay.github.com/sorter/)
+  A sorter control for JavaScript (just a simple SVG up down arrow).
 
 ## Installation
 
-    $ component install ForbesLindesay/sorter
+    $ npm install sorter
 
 ## Guide
 
-  Creates a simple svg image with three states:
+Creates a simple svg image with three states and appends it to each column:
 
-  ![diagram of three states](http://i.imgur.com/2P2Z4.png)
+![diagram of three states](http://i.imgur.com/2P2Z4.png)
 
-  ```javascript
-  var sorter = require('sorter');
+```javascript
+var sorter = require('sorter');
 
-  var all = sorter.appendToParent(document.getElementsByTagName('th'));
-
-  function sortBy(id) {
-    var el = document.querySelector('#' + id + '.sorter');
-    //clear all except el
-    all.clear(el);
-    //toggle state of el
-    sorter(el).toggle();
-  }
-  ```
+sorter('#table-id')
+  .on('sort', function (table, columnHeader, direction) {
+    //table is the table element
+    //column header is the `<th>` element
+    //direction is either `'up'` or `'down'`
+  })
+  .on('clear', function (table) {
+    //return to default sorting
+  })
+```
 
 ## API
 
-  For the purposes of this API `elements` can be a selector string (e.g. `'#id.class-name'`), a single element (e.g. `document.getElementById('id')` or a sudo-array (e.g. `document.getElementsByClassName('class-name')`).
+### TableSorter(table, options)
 
-### sorter.appendToParent(elements)
+```js
+var TableSorter = require('sorter')
+```
 
-  Appends a sorter SVG element to the `children` of each element in `elements` and returns an instance of `Sorter`.
+Add sorters to the `table`, which can either be a selector string that selects a single element, or an element.
 
-### sorter(elements)
+`options` is an optional object with the following properties:
 
-  Returns an instance of `Sorter` which controlls the `elements` provided, where elements are teh svg elements created by `sorter.appendToParent`.
+name        | type     | default               | description
+------------|----------|-----------------------|--------------------------------------
+th          | string   | `'th'`                | A selector, relative to the table element, for a collection of table headers (or an array of table headers)
+sortControl | function | SVG up-down arrow     | This is a function that returns a `SortControl` when passed a table header and the options object.  If this is set, all options below this are ignored.
+sorter      | string   | `'sorter'`            | A class to be added to the sorter
+up          | string   | `'sorter-up'`         | A class to be added to the sorter when it is pointing up
+down        | string   | `'sorter-down'`       | A class to be added to the sorter when it is pointing down
+upArrow     | string   | `'sorter-up-arrow'`   | A class to be added to the sorter's up arrow
+downArrow   | string   | `'sorter-down-arrow'` | A class to be added to the sorter's down arrow
 
-### Sorter#up()
+The following CSS is also added to the page (and can be overriden in your own CSS)
 
-  Puts the sorter(s) in the `up` state.
+```css
+.sorter {
+  width: 1em;
+  height: 1em;
+}
+.sorter-down .sorter-up-arrow {
+  display: none;
+}
+.sorter-up .sorter-down-arrow {
+  display: none;
+}
+```
 
-### Sorter#down()
+#### Events
 
-  Puts the sorter(s) in the `down` state.
+Table sorter emits the following events:
 
-### Sorter#clear(except)
+ - sort
+ - clear
 
-  Resets the appearence of the sorter(s) except the one passed as an argument (typically the one just clicked).
+Each get the `table` element as their first argument.  The `'sort'` event additionally gets the `ColumnHeader` and `Direction`.  The `Direction is a string and either `'up'` or `'down'`.
 
-### Sorter#toggle()
+#### Methods
 
-  Toggles the sorter's state between `up` and `down` and returns the name of the end state.
+##### sort(th, direction, silent)
+
+Update the table so that the given header is sorted in the given direction.  If no direction is provided this acts as a toggle.  If `silent` is `true`, the `'sort'` event is not emitted.
+
+##### clear(silent)
+
+Remove all sorting from the table.  If `silent` is `true`, the `'clear'` event is not emitted.
+
+### SortControl
+
+You can return a custom `SortControl` from the `sortControl` function to replace the default up-down arrow implementation.  It must have `up`, `down` and `clear` as methods.
+
+For example, if you wanted to just have the text `(up)` and `(down)` instead of up and down arrows, you could try something like the following.
+
+```js
+var sorter = require('sorter')
+function sortControl(th) {
+  var el = null
+  function up() {
+    clear()
+    el = document.createTextNode(' (up)')
+    th.appendChild(el)
+  }
+  function down() {
+    clear()
+    el = document.createTextNode(' (down)')
+    th.appendChild(el)
+  }
+  function clear() {
+    if (el) {
+      th.removeChild(el)
+      el = null
+    }
+  }
+  return {up: up, down: down, clear: clear}
+}
+sorter('#table-id', {sortControl: sortControl})
+```
+
+Note that if all you wanted to do was modify something like the colour, you'd be better off just adding some CSS using the default styles.
 
 ## License
 
