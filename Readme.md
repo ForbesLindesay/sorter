@@ -3,7 +3,7 @@
 
   A sorter control for JavaScript (just a simple SVG up down arrow).
 
-[![Dependency Status](https://david-dm.org/ForbesLindesay/sorter.png)](https://david-dm.org/ForbesLindesay/sorter)
+[![Dependency Status](https://img.shields.io/david/ForbesLindesay/sorter.svg)](https://david-dm.org/ForbesLindesay/sorter)
 [![NPM version](https://img.shields.io/npm/v/sorter.svg)](https://www.npmjs.com/package/sorter)
 
 ## Installation
