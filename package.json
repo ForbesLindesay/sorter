@@ -4,7 +4,7 @@
   "description": "A sorter control for JavaScript (just a simple SVG up down arrow).",
   "keywords": [],
   "dependencies": {
-    "insert-css": "0.0.0",
+    "insert-css": "2.0.0",
     "dominate": "~2.0.0",
     "arrayify": "~1.0.0"
   },
