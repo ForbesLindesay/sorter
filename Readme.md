@@ -1,6 +1,8 @@
 
 # sorter
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ForbesLindesay/sorter.svg)](https://greenkeeper.io/)
+
   A sorter control for JavaScript (just a simple SVG up down arrow).
 
 [![Dependency Status](https://img.shields.io/david/ForbesLindesay/sorter.svg)](https://david-dm.org/ForbesLindesay/sorter)
